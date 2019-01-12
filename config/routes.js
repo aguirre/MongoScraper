@@ -71,4 +71,95 @@ router.get("/", (req, res) => {
     });
 });
 
+router.get("/saved", (req, res) => {
+  db.Article.find({ isSaved: true })
+    .then(function(retrievedArticles) {
+      let hbsObject;
+      hbsObject = {
+        articles: retrievedArticles
+      };
+      res.render("saved", hbsObject);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
+router.get("/articles", function(req, res) {
+  db.Article.find({})
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
+router.put("/save/:id", function(req, res) {
+  db.Article.findOneAndUpdate({ _id: req.params.id }, { isSaved: true })
+    .then(function(data) {
+      res.json(data);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
+router.put("/remove/:id", function(req, res) {
+  db.Article.findOneAndUpdate({ _id: req.params.id }, { isSaved: false })
+    .then(function(data) {
+      res.json(data);
+    })
+    .catch(function(err) {});
+});
+
+router.get("/articles/:id", function(req, res) {
+  db.Article.find({ _id: req.params.id })
+
+    .populate({
+      path: "note",
+      model: "Note"
+    })
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
+router.post("/note/:id", function(req, res) {
+  console.log(req.body);
+  db.Note.create(req.body)
+    .then(function(dbNote) {
+      return db.Article.findOneAndUpdate(
+        { _id: req.params.id },
+        { $push: { note: dbNote._id } },
+        { new: true }
+      ).populate("note");
+    })
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
+router.delete("/note/:id", function(req, res) {
+  db.Note.findByIdAndRemove({ _id: req.params.id })
+    .then(function(dbNote) {
+      return db.Article.findOneAndUpdate(
+        { note: req.params.id },
+        { $pullAll: [{ note: req.params.id }] }
+      );
+    })
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
 module.exports = router;
