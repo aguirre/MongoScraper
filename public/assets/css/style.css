@@ -1,0 +1,36 @@
+body {
+  background: #136a8a;
+  background: -webkit-linear-gradient(to right, #267871, #136a8a);
+  background: linear-gradient(to right, #267871, #136a8a);
+  color: white;
+}
+
+a {
+  color: white;
+}
+
+a:hover {
+  color: #136a8a;
+}
+
+.navbar {
+  text-shadow: 2px 2px 4px #000;
+}
+
+.jumbotron {
+  background-image: url("../images/bg.png");
+  font-family: "Teko", cursive;
+  margin-top: 80px;
+  text-shadow: 2px 2px 4px #000;
+}
+
+.card {
+  background-color: rgba(51, 51, 51, 0.8);
+  margin: 10px;
+}
+
+.modal-content,
+.list-group-item {
+  background-color: rgba(51, 51, 51, 0.8) !important;
+  /* color: #000 !important; */
+}
